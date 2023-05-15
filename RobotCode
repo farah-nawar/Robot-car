@@ -1,0 +1,295 @@
+#include <SoftwareSerial.h> 
+SoftwareSerial MyBlue(0,1); // RX | TX 
+#include <LiquidCrystal.h>
+#define echoPin 24 // attach pin D2 Arduino to pin Echo of HC-SR04
+#define trigPin 22 //attach pin D3 Arduino to pin Trig of HC-SR04
+#define echo2 49 // attach pin D2 Arduino to pin Echo of HC-SR04
+#define trig2 48 //attach pin D3 Arduino to pin Trig of HC-SR04
+
+#define rowan A1
+char t;
+int jera=1;
+int backwards=1;
+int motor1pin1 = 4;
+int motor1pin2 = 5;
+int motor2pin1 = 6;
+int motor2pin2 = 7;
+int WHITEBACK1 = 50;
+int WHITEBACK2= 52;
+int IR1=30;      //Right sensor
+int IR2=32;    //left Sensor
+const int ldrPin = A0;  //the number of the LDR pin
+long duration; // variable for the duration of sound wave travel
+int distance; // variable for the distance measurement
+// initialize the library with the numbers of the interface pins
+LiquidCrystal lcd(12,11,25,26,3,2);
+const int buzzer = 23; //buzzer to arduino pin 9
+const int buzzer2 = 46; //buzzer to arduino pin 9
+float temp;
+int tempPin = 0;
+void setup() {
+  pinMode (52, OUTPUT);
+   pinMode(50,OUTPUT);
+  pinMode(motor1pin1, OUTPUT);
+  pinMode(motor1pin2, OUTPUT);
+  pinMode(motor2pin1, OUTPUT);
+  pinMode(motor2pin2, OUTPUT);
+   pinMode(trig2, OUTPUT);
+  pinMode(echo2, INPUT);
+   pinMode(9, OUTPUT); 
+  pinMode(10, OUTPUT);
+  pinMode(13, OUTPUT);
+  pinMode(36,OUTPUT);
+  pinMode(37,OUTPUT);
+  pinMode(44,OUTPUT);
+  pinMode(53,OUTPUT);
+    pinMode(ldrPin, INPUT);   //initialize the LDR pin as an input
+  pinMode(buzzer, OUTPUT); // Set buzzer - pin 9 as an output
+  pinMode(buzzer2, OUTPUT); // Set buzzer - pin 9 as an output
+   pinMode(trigPin, OUTPUT);// set the trig pin to output (Send sound waves)
+  pinMode(echoPin, INPUT);// set the echo pin to input (recieve sound waves)
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+  Serial.begin(9600);
+   //analogWrite(9, 60);
+    //analogWrite(10, 60);
+    digitalWrite (WHITEBACK1,HIGH);
+ digitalWrite (WHITEBACK2,HIGH);
+}
+
+void loop() {
+ 
+ 
+if (Serial.available() >0)
+{
+  
+  t = Serial.read();
+  switch (t)
+  {
+    case 'f':
+    Serial.print(78);
+  digitalWrite(motor1pin1, LOW);
+  digitalWrite(motor1pin2, HIGH);
+  digitalWrite(motor2pin1, HIGH);
+  digitalWrite(motor2pin2, LOW);
+  digitalWrite (WHITEBACK1,HIGH);
+ digitalWrite (WHITEBACK2,HIGH);
+  digitalWrite (44,HIGH);
+ digitalWrite (53,HIGH);
+  
+    
+    break; 
+    case 'b':
+     Serial.print(32);
+   digitalWrite(motor1pin1, HIGH);
+  digitalWrite(motor1pin2, LOW);
+  digitalWrite(motor2pin1, LOW);
+  digitalWrite(motor2pin2, HIGH);
+ 
+  digitalWrite (WHITEBACK1,LOW);
+ digitalWrite (WHITEBACK2,LOW);
+  digitalWrite (44,HIGH);
+ digitalWrite (53,HIGH);
+    break;
+    case 'P':
+  digitalWrite(motor1pin1, LOW);
+  digitalWrite(motor1pin2, LOW);
+  digitalWrite(motor2pin1, LOW);
+  digitalWrite(motor2pin2, LOW);
+  digitalWrite (WHITEBACK1,HIGH);
+ digitalWrite (WHITEBACK2,HIGH);
+  digitalWrite (44,LOW);
+ digitalWrite (53,LOW);
+    break;
+case 'L':
+     digitalWrite(motor1pin1, LOW);
+  digitalWrite(motor1pin2, HIGH);
+  digitalWrite(motor2pin1,LOW);
+  digitalWrite(motor2pin2, LOW);
+  digitalWrite (WHITEBACK1,HIGH);
+ digitalWrite (WHITEBACK2,HIGH);
+  digitalWrite (44,HIGH);
+ digitalWrite (53,HIGH);
+
+  break;
+   case 'R':
+   digitalWrite(motor1pin1, LOW);
+  digitalWrite(motor1pin2, LOW);
+  digitalWrite(motor2pin1,HIGH);
+  digitalWrite(motor2pin2, LOW);
+  digitalWrite (WHITEBACK1,HIGH);
+ digitalWrite (WHITEBACK2,HIGH);
+  digitalWrite (44,HIGH);
+ digitalWrite (53,HIGH);
+  break;
+  
+  case 'm' :
+  jera=1;
+     while(jera){ 
+      if(digitalRead(IR1)==LOW && digitalRead(IR2)==LOW) //both iR on black surface led on
+  {
+      Serial.print("high");
+     digitalWrite(motor1pin1, LOW);
+  digitalWrite(motor1pin2, HIGH);
+  digitalWrite(motor2pin1, HIGH);
+  digitalWrite(motor2pin2, LOW);
+    analogWrite (9, 60);
+    analogWrite (10, 60);
+    //Stop both Motors
+    
+  }
+
+  else if(digitalRead(IR1)==HIGH && digitalRead(IR2)==HIGH)  //both irs on white leds off hymshy
+  {
+     Serial.print("low");
+    digitalWrite(motor1pin2,LOW);
+    digitalWrite(motor2pin2 ,LOW);
+    digitalWrite(motor1pin1,LOW);
+    digitalWrite(motor2pin1,LOW);
+   analogWrite (9, 0);
+   analogWrite (10, 0);
+   jera=0;
+  }
+  else{
+     analogWrite (9, 0);
+   analogWrite (10, 0);
+    digitalWrite(motor1pin2,LOW);
+    digitalWrite(motor2pin2 ,LOW);
+    digitalWrite(motor1pin1,LOW);
+    digitalWrite(motor2pin1,LOW);
+   analogWrite (9, 0);
+   analogWrite (10, 0);
+   jera=0;
+    }
+     }
+  break;
+  case '1' ://controlled speed at 60
+  analogWrite(9,60);
+  analogWrite(10, 60);
+  digitalWrite (WHITEBACK1,HIGH);
+ digitalWrite (WHITEBACK2,HIGH);
+  digitalWrite (44,HIGH);
+ digitalWrite (53,HIGH);
+  break;
+  case'2': //controlled speed at 60
+  analogWrite(9,100);
+  analogWrite(10, 100);
+  digitalWrite (WHITEBACK1,HIGH);
+ digitalWrite (WHITEBACK2,HIGH);
+  digitalWrite (44,HIGH);
+ digitalWrite (53,HIGH);
+  break;
+   case'3': //controlled speed at 60
+  analogWrite(9,150);
+  analogWrite(10, 150);
+  digitalWrite (WHITEBACK1,HIGH);
+ digitalWrite (WHITEBACK2,HIGH);
+  digitalWrite (44,HIGH);
+ digitalWrite (53,HIGH);
+  break;
+  }
+}
+temp = analogRead(rowan);
+   // read analog volt from sensor and save to variable temp
+   temp = temp * 0.26039;
+   // convert the analog volt to its temperature equivalent 
+   //lcd.setCursor(0, 1);// to print fl line elly tht el temp
+  // lcd.print(temp);
+digitalWrite(trigPin, LOW);//ir
+  delayMicroseconds(2);//ir
+  // Sets the trigPin HIGH (ACTIVE) for 10 microseconds
+  digitalWrite(trigPin, HIGH);//ir
+  delayMicroseconds(10);//ir
+  digitalWrite(trigPin, LOW);//ir
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(echoPin, HIGH);//ir
+  //lcd.setCursor(0, 1);// to print fl line elly tht el temp
+  // Calculating the distance
+  distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
+  // Displays the distance on the Serial Monitor
+ if (distance<12){
+  lcd.clear();
+  lcd.print("danger   ");
+  lcd.print(temp);
+    digitalWrite(motor1pin1, LOW);
+  digitalWrite(motor1pin2, LOW);
+  digitalWrite(motor2pin1, LOW);
+  digitalWrite(motor2pin2, LOW);
+   digitalWrite(buzzer,   HIGH);
+    digitalWrite (44,LOW);
+ digitalWrite (53,LOW);
+ digitalWrite(36,LOW  );
+ digitalWrite(37,LOW);
+  delayMicroseconds(50);
+  }
+  else{
+     digitalWrite (44,HIGH);
+ digitalWrite (53,HIGH);
+     digitalWrite(buzzer,   LOW);
+     digitalWrite(36,HIGH);
+ digitalWrite(37,HIGH);
+      lcd.clear();
+    lcd.print("safe   ");
+    lcd.print(temp);
+   
+     delayMicroseconds(50);
+    }
+     int ldrStatus = analogRead(ldrPin);   //read the status of the LDR value
+
+  //check if the LDR status is <= 300
+  //if it is, the LED is HIGH
+
+   if (ldrStatus <1000) {
+
+    digitalWrite(36, HIGH);               //turn LED on
+    Serial.println("LDR is DARK, LED is ON");
+    Serial.println(ldrStatus);
+    digitalWrite(37, HIGH); 
+   }
+  else {
+Serial.println(ldrStatus);
+    //digitalWrite(ledPin, LOW);          //turn LED off
+    Serial.println("---------------");
+      digitalWrite(37, LOW); 
+      digitalWrite(36, LOW); 
+  }
+  digitalWrite(trig2, LOW);
+  delayMicroseconds(5);
+  digitalWrite(trig2, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig2, LOW);
+  int a = pulseIn(echo2, HIGH);
+  int distance2 = a * 0.0343 / 2;
+ 
+
+  if (distance2 < 16 && distance2 >10)
+  {
+   
+    digitalWrite(buzzer2, HIGH);
+    delay(20);
+    digitalWrite(buzzer2, LOW);
+    delay(20);
+    digitalWrite(buzzer2, HIGH);
+    delay(20);
+    digitalWrite(buzzer2, LOW);
+    delay(150);
+       
+
+  }
+  
+   else if (distance2 < 10)
+  { digitalWrite(motor1pin1, LOW);
+  digitalWrite(motor1pin2, LOW);
+  digitalWrite(motor2pin1, LOW);
+  digitalWrite(motor2pin2, LOW);
+   digitalWrite(buzzer2, HIGH);
+    digitalWrite (44,LOW);
+ digitalWrite (53,LOW);
+     
+    
+  }
+  else
+  {
+     digitalWrite(buzzer2, LOW);
+  }
+}
